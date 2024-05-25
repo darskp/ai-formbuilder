@@ -19,7 +19,8 @@ import { jsonForms } from '@/config/schema';
 import { db } from '@/config';
 import moment from 'moment';
 
-const prompt: string = "On the basis of description please give form in json format with form title, from subheading with form having form field, form name, placeholder name, and form label, fieldType, field required in json format, note: GIVE ME ONLY JSON FORMAT NO EXAPLNATION NOTHING"
+const prompt: string = "Based on the provided description, generate a JSON object for a form. The JSON object should include the following fields: formTitle, formSubheading, and formFields. Each formField should have fieldName, placeholder, fieldLabel, fieldType, and isRequired. Provide only the JSON object without any additional explanation.";
+
 const CreateForm = () => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [userInput, setUserInput] = React.useState<string>("");
@@ -30,20 +31,20 @@ const CreateForm = () => {
     const handleFormInput = async () => {
         setLoading(true)
         const result: any = await chatSession.sendMessage(`description ${userInput} ${prompt}`);
-        console.log(result.response.text());
         const createdBy = user?.primaryEmailAddress?.emailAddress;
-        if (result.response.text() && createdBy) {
-            setLoading(false)
+        let jsonResponse = result.response.text();
+        
+        if (jsonResponse && createdBy) {
+            jsonResponse = jsonResponse.replace(/```json|```/g, '').trim();
+            setLoading(false);
+
             const response = await db.insert(jsonForms).values({
                 createdAt: moment().format(),
                 createdBy: createdBy,
-                jsonForm: result.response.text()
+                jsonForm: JSON.parse(jsonResponse)
             }).returning({id:jsonForms.id})
-            
-            console.log("response", response);
             router.push(`/edit-form/${response[0].id}`)
         }
-
     }
 
     return (
