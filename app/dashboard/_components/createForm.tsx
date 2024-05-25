@@ -35,11 +35,11 @@ const CreateForm = () => {
         if (result.response.text() && createdBy) {
             setLoading(false)
             const response = await db.insert(jsonForms).values({
-                createdAt: moment().format('DD/MM/YYYY'),
+                createdAt: moment().format(),
                 createdBy: createdBy,
                 jsonForm: result.response.text()
             }).returning({id:jsonForms.id})
-            // 
+            
             console.log("response", response);
             router.push(`/edit-form/${response[0].id}`)
         }
