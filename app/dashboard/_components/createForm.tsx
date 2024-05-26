@@ -19,7 +19,13 @@ import { jsonForms } from '@/config/schema';
 import { db } from '@/config';
 import moment from 'moment';
 
-const prompt: string = "Based on the provided description, generate a JSON object for a form. The JSON object should include the following fields: formTitle, formSubheading, and formFields. Each formField should have fieldName, placeholder, fieldLabel, fieldType, and isRequired. Provide only the JSON object without any additional explanation.";
+const prompt: string = `Based on the provided description, generate a JSON object for a form. 
+The JSON object should include the following fields: formTitle, formSubheading, and formFields. 
+Each formField should have fieldName, placeholder, fieldLabel, fieldType, and isRequired, and at the end, 
+a checkbox for agreeing to terms should be included. 
+Provide only the JSON object without any additional explanation. 
+For all fieldTypes, placeholder is required, and if the fieldType is radio or select, provide options as an array of strings. 
+Maximize the number of related form fields based on the description.`;
 
 const CreateForm = () => {
     const [open, setOpen] = React.useState<boolean>(false);
@@ -32,7 +38,7 @@ const CreateForm = () => {
         setLoading(true)
         const result: any = await chatSession.sendMessage(`description ${userInput} ${prompt}`);
         const createdBy = user?.primaryEmailAddress?.emailAddress;
-        let jsonResponse = result.response.text();
+        let jsonResponse = result?.response?.text();
         
         if (jsonResponse && createdBy) {
             jsonResponse = jsonResponse.replace(/```json|```/g, '').trim();

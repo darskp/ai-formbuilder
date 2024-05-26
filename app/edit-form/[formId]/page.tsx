@@ -26,8 +26,7 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                 .where(and(eq(jsonForms.id, formId), eq(jsonForms.createdBy,
                     user?.primaryEmailAddress?.emailAddress)));
             console.log("res",);
-            const formData = result[0].jsonForm;
-
+            const formData = result[0]?.jsonForm;
             setJsonFormData(formData)
         }
     }
@@ -42,9 +41,9 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                 <ArrowLeft />   Back
             </h2>
             <div className="grid gap-5 grid-cols-1 md:grid-cols-3">
-                <div className="h-screen p-5 border rounded-lg">Controller</div>
-                <div className="h-screen p-4 md:col-span-2 border rounded-lg">
-                    <FormUi jsonFormData={jsonFormData} />
+                <div className="p-5 border rounded-lg">Controller</div>
+                <div className="p-5 md:col-span-2 border rounded-lg lg:flex lg:flex-col lg:items-center lg:justify-center">
+                    {JSON?.parse(jsonFormData) && <FormUi jsonFormData={JSON?.parse(jsonFormData)} />}
                 </div>
             </div>
         </div>
