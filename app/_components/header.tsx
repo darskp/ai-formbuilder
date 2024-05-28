@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
@@ -11,7 +12,7 @@ const Header: React.FC = () => {
     const route = useRouter();
 
     console.log(signedIn);
-    
+
 
     useEffect(() => {
         if (isSignedIn) {
@@ -29,7 +30,9 @@ const Header: React.FC = () => {
                     src="/logo.svg"
                 />{signedIn ?
                     <div className='flex items-center gap-5'>
-                        <Button variant='outline' onClick={() => route.push("/dashboard")}>Dashboard</Button>
+                        <Link href="/dashboard">
+                            <Button variant='outline'>Dashboard</Button>
+                        </Link>
                         <UserButton />
                     </div>
                     :
