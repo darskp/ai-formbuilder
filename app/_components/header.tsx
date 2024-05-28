@@ -11,9 +11,6 @@ const Header: React.FC = () => {
     const [signedIn, setsignedIn] = useState<any>(isSignedIn)
     const route = useRouter();
 
-    console.log(signedIn);
-
-
     useEffect(() => {
         if (isSignedIn) {
             setsignedIn(isSignedIn)

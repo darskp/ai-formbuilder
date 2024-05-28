@@ -18,6 +18,7 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { jsonForms } from '@/config/schema';
 import { db } from '@/config';
 import moment from 'moment';
+import { borderStyles } from '@/app/_data/borderStyle';
 
 const prompt: string = `Based on the provided description, generate a JSON object for a form. 
 The JSON object should include the following fields: formTitle, formSubheading, and formFields. 
@@ -39,7 +40,7 @@ const CreateForm = () => {
         const result: any = await chatSession.sendMessage(`description ${userInput} ${prompt}`);
         const createdBy = user?.primaryEmailAddress?.emailAddress;
         let jsonResponse = result?.response?.text();
-        
+
         if (jsonResponse && createdBy) {
             jsonResponse = jsonResponse.replace(/```json|```/g, '').trim();
             setLoading(false);
@@ -47,8 +48,11 @@ const CreateForm = () => {
             const response = await db.insert(jsonForms).values({
                 createdAt: moment().format(),
                 createdBy: createdBy,
-                jsonForm: JSON.parse(jsonResponse)
-            }).returning({id:jsonForms.id})
+                jsonForm: JSON.parse(jsonResponse),
+                theme: '',
+                gradient: '',
+                style: null
+            }).returning({ id: jsonForms.id })
             router.push(`/edit-form/${response[0].id}`)
         }
     }

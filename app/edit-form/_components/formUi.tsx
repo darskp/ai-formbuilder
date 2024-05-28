@@ -11,12 +11,12 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import FieldEdit from './FieldEdit';
+import { borderStyleType } from '@/lib/types';
 
-const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { selectedTheme: string, jsonFormData: any, onUpdate: (value: any, index: number) => void, onDeleteFormField: (index: number) => void }) => {
-    console.log(jsonFormData);
+const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField, selectedStyle }: { selectedTheme: string, jsonFormData: any, onUpdate: (value: any, index: number) => void, onDeleteFormField: (index: number) => void, selectedStyle: borderStyleType }) => {
 
     return (
-        <div className='border p-5 rounded-lg lg:w-[600px]' data-theme={selectedTheme}>
+        <div className='border p-5 rounded-lg lg:w-[600px]' data-theme={selectedTheme} style={{ [selectedStyle?.key]: selectedStyle?.value }}>
             <h2 className='font-bold text-center text-2xl'>{jsonFormData?.formTitle}</h2>
             <h2 className='text-sm text-center text-gray-400'>{jsonFormData?.formSubheading}</h2>
             <div>
@@ -25,9 +25,9 @@ const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { 
                         {field?.fieldType == 'select' ?
                             <div className='w-full'>
                                 <Label htmlFor={field?.fieldName} className='text-xs mb-1 text-gray-500'>{field?.fieldLabel}</Label>
-                                <div className='mt-1 '>
-                                    <Select>
-                                        <SelectTrigger className="w-full focus:ring-2 focus:ring-primary bg-transparent">
+                                <div className='mt-1'>
+                                    <Select data-theme={selectedTheme}>
+                                        <SelectTrigger className="w-full bg-transparent placeholder-opacity-25 focus-visible:ring-2 focus-visible:ring-primary">
                                             <SelectValue placeholder={field?.placeholder} />
                                         </SelectTrigger>
                                         <SelectContent>
