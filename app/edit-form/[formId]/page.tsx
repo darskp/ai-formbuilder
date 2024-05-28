@@ -8,12 +8,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import FormUi from "../_components/formUi";
 import { toast } from "sonner"
+import Controller from "../_components/controller";
 
 const Editform = ({ params: { formId } }: { params: { formId: number | undefined } }) => {
     const { user } = useUser();
     const router = useRouter()
     const [jsonFormData, setJsonFormData] = useState<any>(null);
     const [updateTrigger, setUpdateTrigger] = useState<any>(null)
+    const [selectedTheme, setSelectedTheme] = useState<string>("light")
+    const [selectedGradient, setSelectedGradient] = useState<string>("")
 
     const getform = async () => {
         if (user?.primaryEmailAddress?.emailAddress && formId) {
@@ -42,7 +45,6 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                 .where(and(eq(jsonForms.id, formId), eq(jsonForms.createdBy,
                     user?.primaryEmailAddress?.emailAddress)));
             toast("Updated!!!")
-
         }
     }
     useEffect(() => {
@@ -52,14 +54,8 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
         }
     }, [updateTrigger])
 
-    console.log("json", jsonFormData);
-
-
     const onUpdate = (value: any, index: number) => {
         console.log(jsonFormData);
-
-        // jsonFormData?.formFields[index] = { ...jsonFormData?.formFields[index], fieldLabel: value?.label, placeholder: value?.placeholder }
-        jsonFormData.formFields[index].fieldLabel = value?.label
         jsonFormData.formFields[index].placeholder = value?.placeholder
         setUpdateTrigger(Date.now())
     }
@@ -78,9 +74,14 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                 <ArrowLeft />  Back
             </h2>
             <div className="grid gap-5 grid-cols-1 md:grid-cols-3">
-                <div className="p-5 border rounded-lg">Controller</div>
-                <div className="p-5 md:col-span-2 border rounded-lg lg:flex lg:flex-col lg:items-center lg:justify-center">
-                    {jsonFormData && <FormUi jsonFormData={jsonFormData} onUpdate={onUpdate} onDeleteFormField={onDeleteFormField} />}
+                <div className="p-5 border rounded-lg">
+                    <Controller
+                        selectedTheme={(value: string) => setSelectedTheme(value)}
+                        selectedGradient={(value: string) => setSelectedGradient(value)}
+                    />
+                </div>
+                <div style={{background:selectedGradient}} className="p-5 md:col-span-2 border rounded-lg lg:flex lg:flex-col lg:items-center">
+                    {jsonFormData && <FormUi selectedTheme={selectedTheme} jsonFormData={jsonFormData} onUpdate={onUpdate} onDeleteFormField={onDeleteFormField} />}
                 </div>
             </div>
         </div>

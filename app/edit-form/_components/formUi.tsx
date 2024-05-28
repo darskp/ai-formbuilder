@@ -12,12 +12,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import FieldEdit from './FieldEdit';
 
-const FormUi = ({ jsonFormData, onUpdate, onDeleteFormField }: { jsonFormData: any, onUpdate: (value: any, index: number) => void, onDeleteFormField:(index:number)=>void }) => {
+const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { selectedTheme: string, jsonFormData: any, onUpdate: (value: any, index: number) => void, onDeleteFormField: (index: number) => void }) => {
     console.log(jsonFormData);
 
-
     return (
-        <div className='border p-5 rounded-lg lg:w-[600px] '>
+        <div className='border p-5 rounded-lg lg:w-[600px]' data-theme={selectedTheme}>
             <h2 className='font-bold text-center text-2xl'>{jsonFormData?.formTitle}</h2>
             <h2 className='text-sm text-center text-gray-400'>{jsonFormData?.formSubheading}</h2>
             <div>
@@ -28,7 +27,7 @@ const FormUi = ({ jsonFormData, onUpdate, onDeleteFormField }: { jsonFormData: a
                                 <Label htmlFor={field?.fieldName} className='text-xs mb-1 text-gray-500'>{field?.fieldLabel}</Label>
                                 <div className='mt-1 '>
                                     <Select>
-                                        <SelectTrigger className="w-full focus:ring-2 focus:ring-primary">
+                                        <SelectTrigger className="w-full focus:ring-2 focus:ring-primary bg-transparent">
                                             <SelectValue placeholder={field?.placeholder} />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -65,7 +64,7 @@ const FormUi = ({ jsonFormData, onUpdate, onDeleteFormField }: { jsonFormData: a
                                     <div className='w-full'>
                                         <Label htmlFor={field?.fieldName} className='text-xs text-gray-500'>{field?.fieldLabel}</Label>
                                         <Input
-                                            className='mt-1 w-full focus-visible:ring-2 focus-visible:ring-primary'
+                                            className='mt-1 bg-transparent w-full focus-visible:ring-2 focus-visible:ring-primary'
                                             id={field?.fieldName}
                                             name={field?.fieldName}
                                             type={field?.fieldType}
@@ -74,11 +73,12 @@ const FormUi = ({ jsonFormData, onUpdate, onDeleteFormField }: { jsonFormData: a
                                     </div>
                         }
                         <div className='flex items-center justify-center'>
-                            <FieldEdit defaultValue={field} onUpdate={(value) => onUpdate(value, index)} onDeleteFormField={() => onDeleteFormField(index)}/>
+                            <FieldEdit defaultValue={field} onUpdate={(value) => onUpdate(value, index)} onDeleteFormField={() => onDeleteFormField(index)} />
                         </div>
                     </div>
                 ))}
             </div>
+            <button className='btn btn-primary'>Submit</button>
         </div>
     );
 }
