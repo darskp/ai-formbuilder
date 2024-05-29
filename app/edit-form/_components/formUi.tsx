@@ -24,11 +24,12 @@ type formUiProps = {
     jsonFormData: any,
     onUpdate?: any,
     onDeleteFormField?: any,
-    selectedStyle: borderStyleType
+    selectedStyle: borderStyleType,
+    formID?: any
 }
 
-const FormUi = ({ isEdit, selectedTheme, jsonFormData, onUpdate, onDeleteFormField, selectedStyle }: formUiProps) => {
-    let formRef: any= useRef()
+const FormUi = ({ isEdit, selectedTheme, jsonFormData, onUpdate, onDeleteFormField, selectedStyle, formID }: formUiProps) => {
+    let formRef: any = useRef()
     const { user } = useUser()
     const [formData, setFormData] = useState<any>(null)
 
@@ -45,13 +46,15 @@ const FormUi = ({ isEdit, selectedTheme, jsonFormData, onUpdate, onDeleteFormFie
             createdAt: moment().format(),
             createdBy: createdBy,
             formData: JSON.stringify(formData),
+            formRefId:formID
         }).returning({ id: userResponses.id })
         console.log("response", response);
         if (response) {
             setFormData(null)
             formRef.current.reset()
             toast("Response submitted successfully!!!")
-
+        } else {
+            toast("Something went wrong !!!")
         }
 
     }

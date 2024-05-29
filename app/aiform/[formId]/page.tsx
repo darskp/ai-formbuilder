@@ -41,6 +41,7 @@ const Page = ({ params: { formId } }: { params: { formId: number | undefined } }
                 jsonFormData={record?.jsonForm}
                 onUpdate={() => { }}
                 onDeleteFormField={() => { }}
+                formID={record?.id}
             />
             <Link href="/">
                 <div className='hover:scale-105 fixed gap-2 cursor-pointer bottom-5 left-3 md:left-10  flex justify-center text-xs items-center bg-black text-white px-3 py-1 rounded-full'>

@@ -1,5 +1,4 @@
-import { borderStyles } from "@/app/_data/borderStyle";
-import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
 export const jsonForms = pgTable('jsonForms', {
     id: serial('id').primaryKey(),
@@ -16,4 +15,5 @@ export const userResponses = pgTable('userResponses', {
     formData: text('formData').notNull(),
     createdBy: varchar('createdBy').default("anonymous"),
     createdAt: varchar('createdAt').notNull(),
+    formRefId: integer('formRefId').notNull().references(() => jsonForms.id),
 });
