@@ -48,7 +48,7 @@ const CreateForm = () => {
             const response = await db.insert(jsonForms).values({
                 createdAt: moment().format(),
                 createdBy: createdBy,
-                jsonForm: JSON.parse(jsonResponse),
+                jsonForm: JSON.stringify(jsonResponse),
                 theme: '',
                 gradient: '',
                 style: null
@@ -60,7 +60,7 @@ const CreateForm = () => {
     return (
         <div>
             <Button onClick={() => setOpen(true)}>+ Create Form</Button>
-            <Dialog open={open}>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Create new Form</DialogTitle>
@@ -70,7 +70,7 @@ const CreateForm = () => {
                                 onChange={(e) => setUserInput(e.target.value)}
                                 value={userInput}
                             />
-                            <div className='flex gap-2 my-3 justify-end'>
+                            <div className='flex gap-2 mt-4 mb-0 justify-end'>
                                 <Button onClick={() => setOpen(false)} variant="destructive">Cancel</Button>
                                 <Button onClick={() => handleFormInput()} disabled={loading}>{loading ? <Loader2 className='animate-spin' /> : "Create"}</Button>
                             </div>

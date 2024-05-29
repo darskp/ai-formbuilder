@@ -3,7 +3,7 @@ import { db } from "@/config";
 import { jsonForms } from "@/config/schema";
 import { useUser } from "@clerk/nextjs";
 import { and, eq } from "drizzle-orm";
-import { ArrowLeft, Router, Share2, SquareArrowOutDownLeftIcon, SquareArrowOutUpRight } from "lucide-react";
+import { ArrowLeft, Share2, SquareArrowOutUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import FormUi from "../_components/formUi";
@@ -12,6 +12,7 @@ import Controller from "../_components/controller";
 import { columnNames } from "@/lib/constants";
 import { borderStyles } from "@/app/_data/borderStyle";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Editform = ({ params: { formId } }: { params: { formId: number | undefined } }) => {
     const router = useRouter()
@@ -21,7 +22,6 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
     const [selectedGradient, setSelectedGradient] = useState<any>("")
     const [selectedStyle, setSelectedStyle] = useState<any>(borderStyles[0])
     const { user } = useUser();
-
 
     const getform = async () => {
         if (user?.primaryEmailAddress?.emailAddress && formId) {
@@ -92,9 +92,11 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                     <ArrowLeft />  Back
                 </h2></button></div>
                 <div className="flex gap-2">
-                    <Button size="sm" className="flex gap-2" onClick={() => { router.push(`/ai-form/$${formId}`) }}>
-                        <SquareArrowOutUpRight className="w-5 h-5" /> Live Preview
-                    </Button>
+                    <Link href={`/aiform/${formId}`} target="_blank">
+                        <Button size="sm" className="flex gap-2">
+                            <SquareArrowOutUpRight className="w-5 h-5" /> Live Preview
+                        </Button>
+                    </Link>
                     <Button size="sm" className="flex gap-2 hover:bg-green-700 bg-green-600"><Share2 className="w-5 h-5" /> Share</Button>
                 </div>
             </div>
@@ -121,6 +123,7 @@ const Editform = ({ params: { formId } }: { params: { formId: number | undefined
                 <div style={{ background: selectedGradient }} className="p-5 md:col-span-2 border rounded-lg lg:flex lg:flex-col lg:items-center">
                     {jsonFormData &&
                         <FormUi selectedTheme={selectedTheme}
+                            isEdit={true}
                             selectedStyle={selectedStyle}
                             jsonFormData={jsonFormData}
                             onUpdate={onUpdate}

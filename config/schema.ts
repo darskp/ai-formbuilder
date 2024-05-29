@@ -10,3 +10,10 @@ export const jsonForms = pgTable('jsonForms', {
     gradient: varchar('gradient').default(''),
     style: varchar('style')
 });
+
+export const userResponses = pgTable('userResponses', {
+    id: serial('id').primaryKey(),
+    formData: text('formData').notNull(),
+    createdBy: varchar('createdBy').default("anonymous"),
+    createdAt: varchar('createdAt').notNull(),
+});

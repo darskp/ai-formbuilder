@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/button';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const Header: React.FC = () => {
-    const { isSignedIn, user, isLoaded } = useUser();
+    const { isSignedIn } = useUser();
     const [signedIn, setsignedIn] = useState<any>(isSignedIn)
-    const route = useRouter();
+    const pathName = usePathname()
 
     useEffect(() => {
         if (isSignedIn) {
@@ -17,7 +17,7 @@ const Header: React.FC = () => {
         }
     }, [isSignedIn])
 
-    return (
+    return !pathName.includes('/aiform') &&
         <div className='p-5 border-b shadow-sm'>
             <div className='flex items-center justify-between'>
                 <Image
@@ -39,7 +39,6 @@ const Header: React.FC = () => {
                 }
             </div>
         </div>
-    )
 }
 
 export default Header;
