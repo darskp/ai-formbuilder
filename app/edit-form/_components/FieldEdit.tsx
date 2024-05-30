@@ -25,8 +25,6 @@ const FieldEdit = ({ defaultValue, onUpdate, onDeleteFormField }: { defaultValue
     const [label, setLabel] = useState<string>(defaultValue?.fieldLabel);
     const [placeholder, setPlaceholder] = useState<string>(defaultValue?.placeholder);
 
-    console.log("p", defaultValue);
-
     return (
         <div className='flex gap-2'>
             <Popover>

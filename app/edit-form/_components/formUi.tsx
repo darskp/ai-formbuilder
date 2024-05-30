@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Select,
     SelectContent,
@@ -11,12 +11,72 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import FieldEdit from './FieldEdit';
+import { borderStyleType } from '@/lib/types';
+import { db } from '@/config';
+import moment from 'moment';
+import { userResponses } from '@/config/schema';
+import { useUser } from '@clerk/nextjs';
+import { toast } from 'sonner';
 
-const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { selectedTheme: string, jsonFormData: any, onUpdate: (value: any, index: number) => void, onDeleteFormField: (index: number) => void }) => {
-    console.log(jsonFormData);
+type formUiProps = {
+    isEdit: Boolean,
+    selectedTheme: string,
+    jsonFormData: any,
+    onUpdate?: any,
+    onDeleteFormField?: any,
+    selectedStyle: borderStyleType,
+    formID?: any
+}
+
+const FormUi = ({ isEdit, selectedTheme, jsonFormData, onUpdate, onDeleteFormField, selectedStyle, formID }: formUiProps) => {
+    let formRef: any = useRef()
+    const { user } = useUser()
+    const [formData, setFormData] = useState<any>(null)
+
+    const onHandleInputChange = (e: any) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value })
+    }
+
+    const onHandleFormSubmit = async (e: any) => {
+        e.preventDefault();
+        console.log(formData)
+        const createdBy = user?.primaryEmailAddress?.emailAddress || "anonymous";
+        const response = await db.insert(userResponses).values({
+            createdAt: moment().format(),
+            createdBy: createdBy,
+            formData: JSON.stringify(formData),
+            formRefId:formID
+        }).returning({ id: userResponses.id })
+        console.log("response", response);
+        if (response) {
+            setFormData(null)
+            formRef.current.reset()
+            toast("Response submitted successfully!!!")
+        } else {
+            toast("Something went wrong !!!")
+        }
+
+    }
+
+    const handleSelectChange = (value: string, fieldName: any) => {
+        setFormData({ ...formData, [fieldName]: value })
+    }
+
+    const handleCheckBox = (fieldName: string, itemName: string, value: string | boolean) => {
+        const list: any = formData?.[fieldName] ? formData[fieldName] : []
+        if (value) {
+            list.push({ label: itemName, value: value });
+            setFormData({ ...formData, [fieldName]: list })
+        } else {
+            const result: any = list?.filter((item: any) => item?.label === itemName)
+            setFormData({ ...formData, [fieldName]: result })
+        }
+    };
+    console.log(formData);
 
     return (
-        <div className='border p-5 rounded-lg lg:w-[600px]' data-theme={selectedTheme}>
+        <form onSubmit={onHandleFormSubmit} ref={formRef} className='border p-5 rounded-lg lg:w-[600px]' data-theme={selectedTheme} style={{ [selectedStyle?.key]: selectedStyle?.value }}>
             <h2 className='font-bold text-center text-2xl'>{jsonFormData?.formTitle}</h2>
             <h2 className='text-sm text-center text-gray-400'>{jsonFormData?.formSubheading}</h2>
             <div>
@@ -25,9 +85,9 @@ const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { 
                         {field?.fieldType == 'select' ?
                             <div className='w-full'>
                                 <Label htmlFor={field?.fieldName} className='text-xs mb-1 text-gray-500'>{field?.fieldLabel}</Label>
-                                <div className='mt-1 '>
-                                    <Select>
-                                        <SelectTrigger className="w-full focus:ring-2 focus:ring-primary bg-transparent">
+                                <div className='mt-1'>
+                                    <Select data-theme={selectedTheme} onValueChange={(value) => handleSelectChange(value, field?.fieldName)}>
+                                        <SelectTrigger className="w-full bg-transparent placeholder-opacity-25 focus:ring-2 focus:ring-primary">
                                             <SelectValue placeholder={field?.placeholder} />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -40,7 +100,7 @@ const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { 
                             </div>
                             : (field?.fieldType == 'checkbox') ?
                                 <div className="w-full flex items-center space-x-2">
-                                    <Checkbox id={field?.fieldName} />
+                                    <Checkbox id={field?.fieldName} onCheckedChange={(isSelected) => handleCheckBox(field.fieldLabel, field.fieldName, isSelected)} />
                                     <Label
                                         htmlFor={field?.fieldName}
                                         className="text-sm text-gray-700"
@@ -54,7 +114,7 @@ const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { 
                                         <RadioGroup className='mt-1'>
                                             {field?.options?.map((item: any, index: number) => (
                                                 <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value={item} id={item} />
+                                                    <RadioGroupItem value={item} id={item} onClick={() => handleSelectChange(item, field.fieldName)} />
                                                     <Label htmlFor={item} className='text-sm text-gray-500'>{item}</Label>
                                                 </div>
                                             ))}
@@ -69,17 +129,19 @@ const FormUi = ({ selectedTheme, jsonFormData, onUpdate, onDeleteFormField }: { 
                                             name={field?.fieldName}
                                             type={field?.fieldType}
                                             placeholder={field?.placeholder}
+                                            onChange={(e) => onHandleInputChange(e)}
+                                        // required={field?.isRequired}
                                         />
                                     </div>
                         }
-                        <div className='flex items-center justify-center'>
+                        {isEdit && <div className='flex items-center justify-center'>
                             <FieldEdit defaultValue={field} onUpdate={(value) => onUpdate(value, index)} onDeleteFormField={() => onDeleteFormField(index)} />
-                        </div>
+                        </div>}
                     </div>
                 ))}
             </div>
-            <button className='btn btn-primary'>Submit</button>
-        </div>
+            <button type='submit' className='btn btn-primary'>Submit</button>
+        </form>
     );
 }
 
