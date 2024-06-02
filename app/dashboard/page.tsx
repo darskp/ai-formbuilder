@@ -1,11 +1,15 @@
 import React from 'react'
 import CreateForm from './_components/createForm'
+import FormList from './_components/FormList'
 
 const Dashboard = (): JSX.Element => {
   return (
     <div className='p-5'>
-      <h2 className='flex items-center text-2xl justify-between font-bold'>Dashboard <CreateForm/>
+      <h2 className='flex items-center text-2xl justify-between font-bold'>
+        Dashboard 
+      <CreateForm/>
       </h2>
+      <FormList/>
     </div>
   )
 }
